@@ -1,8 +1,10 @@
 package s3kv
 
 import (
-	"testing"
+	"crypto/md5"
 	"fmt"
+	"math/rand"
+	"testing"
 	"unsafe"
 )
 
@@ -308,4 +310,38 @@ func TestHash_opt(t *testing.T) {
 	if output := string(Hash([]Segment{{Key: []byte{0}, Hash: true}})); output != `f71` {
 		t.Error("unexpected output", output)
 	}
+}
+
+var hashed interface{}
+
+func benchmarkHash(b *testing.B, fn func(b []byte) interface{}, l int) {
+	for x := 0; x < b.N; x++ {
+		b.StopTimer()
+		v := make([]byte, l)
+		_, _ = rand.Read(v)
+		b.StartTimer()
+		hashed = fn(v)
+	}
+}
+
+func BenchmarkReduceBytes_actual(b *testing.B) {
+	benchmarkHash(
+		b,
+		func(b []byte) interface{} {
+			return ReduceBytes(b)
+		},
+		1e6,
+	)
+	b.Log(hashed)
+}
+
+func BenchmarkReduceBytes_md5(b *testing.B) {
+	benchmarkHash(
+		b,
+		func(b []byte) interface{} {
+			return md5.Sum(b)
+		},
+		1e6,
+	)
+	b.Log(hashed)
 }

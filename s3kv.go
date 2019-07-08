@@ -50,14 +50,14 @@ func DefaultConfig() *Config {
 }
 
 // Hash calls the method of the same name on the DefaultConfig.
-func Hash(path []Segment, opts ... HashOption) []byte {
+func Hash(path []Segment, opts ...HashOption) []byte {
 	return DefaultConfig().HashConfig.Hash(path, opts...)
 }
 
 // Hash converts a slice of Segment into a path, joining (imploding) segments using c.Separator, and writing either
 // the raw Segment.Key (if Segment.Hash is false) OR the hashed representation of Segment.Key, generated using the
 // HashConfig.Max and HashConfig.HashFunc properties as additional input.
-func (c HashConfig) Hash(path []Segment, opts ... HashOption) []byte {
+func (c HashConfig) Hash(path []Segment, opts ...HashOption) []byte {
 	c.Apply(opts...)
 	buffer := new(bytes.Buffer)
 	for i, seg := range path {
@@ -79,7 +79,7 @@ func (c HashConfig) Hash(path []Segment, opts ... HashOption) []byte {
 }
 
 // Apply modifies the HashConfig by applying the opts.
-func (c *HashConfig) Apply(opts ... HashOption) {
+func (c *HashConfig) Apply(opts ...HashOption) {
 	for _, opt := range opts {
 		if opt == nil {
 			continue
